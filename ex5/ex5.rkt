@@ -50,7 +50,10 @@
 ; Purpose: Returns the concatination of the given two lists, with cont pre-processing
 (define append$
  (lambda (lst1 lst2 cont)
-   #f;@TODO
+    (if (empty? lst1)
+        (cont lst2)
+        (append$ (cdr lst1) lst2 (lambda (append-1) (cont (cons (car lst1) append-1))))
+     )
   )
 )
 
@@ -58,12 +61,29 @@
 ; Signature: equal-trees$(tree1, tree2, succ, fail) 
 ; Type: [Tree * Tree * [Tree ->T1] * [Pair->T2] -> T1 U T2
 ; Purpose: Determines the structure identity of a given two lists, with post-processing succ/fail
-(define leaf? (lambda (x) (not (list? x))))
 (define equal-trees$ 
  (lambda (tree1 tree2 succ fail)
-   #f;@TODO
+   (cond
+    ((and (leaf? tree1) (leaf? tree2)) (succ (cons (car tree1) (car tree2)))) 
+    ((and (not (leaf? tree1)) (leaf? tree2)) (fail (cons (car tree1) (car tree2))))
+    ((and (leaf? tree1) (not (leaf? tree2))) (fail (cons (car tree1) (car tree2))))
+    (else (append$ (cons (car tree1) (car tree2)) (equal-trees$ (cdr tree1) (cdr tree2) succ fail) (lambda (x) x)))
+  )
  )
 )
+
+
+;(define equal-trees$ 
+; (lambda (tree1 tree2 succ fail)
+;   (cond
+;    ((and (leaf? tree1) (leaf? tree2)) (succ (cons tree1 tree2))) 
+;    ((and (not (leaf? tree1)) (leaf? tree2)) (fail (cons tree1 tree2)))
+;    ((and (leaf? tree1) (not (leaf? tree2))) (fail (cons tree1 tree2)))
+;    (else (cons (cons (car tree1) (car tree 2))
+;                (equal-trees$ ())))
+;  )
+; )
+;)
 
 ;;; Q2a
 ; Signature: reduce1-lzl(reducer, init, lzl) 
@@ -71,9 +91,13 @@
 ; Purpose: Returns the reduced value of the given lazy list
 (define reduce1-lzl 
   (lambda (reducer init lzl)
-   #f ;@TODO
+    (if (empty-lzl? lzl)
+        init
+        (reducer (reduce1-lzl reducer init (tail lzl)) (head lzl))
+     )
   )
-)  
+)
+
 
 ;;; Q2b
 ; Signature: reduce2-lzl(reducer, init, lzl, n) 
@@ -81,7 +105,11 @@
 ; Purpose: Returns the reduced value of the first n items in the given lazy list
 (define reduce2-lzl 
   (lambda (reducer init lzl n)
-    #f ;@TODO
+    (if
+      (or (empty-lzl? lzl) (= n 0))
+      init
+      (reducer (head lzl) (reduce2-lzl reducer init (tail lzl) (- n 1)))
+      )
   )
 )  
 
@@ -91,9 +119,18 @@
 ; Purpose: Returns the reduced values of the given lazy list items as a lazy list
 (define reduce3-lzl 
   (lambda (reducer init lzl)
-    #f ;@TODO
+    (reduce3-lzl-helper reducer init lzl 1)
   )
-)  
+)
+
+(define reduce3-lzl-helper
+  (lambda (reducer init lzl n)
+    (if (empty-lzl? lzl)
+        init
+        (cons (reduce2-lzl reducer init lzl n) (lambda () (reduce3-lzl-helper reducer init lzl (+ n 1))))
+     )
+  )
+) 
  
 ;;; Q2e
 ; Signature: integers-steps-from(from,step) 
