@@ -18,12 +18,10 @@ maximum_printing_depth(100).
    set_prolog_flag(toplevel_print_options, [max_depth(MPD)|B]).
 
 
-
 author(1, "Isaac Asimov").
 author(2, "Frank Herbert").
 author(3, "William Morris").
 author(4, "J.R.R Tolkein").
-
 
 genre(1, "Science").
 genre(2, "Literature").
@@ -44,7 +42,10 @@ book("The Lord of the Rings", 4, 4, 1250).
 % Signature: authorOfGenre(GenreName, AuthorName)/2
 % Purpose: is true if an author by the name
 %{AuthorName} has written a book belonging to the genre named {GenreName}
-authorOfGenre(GenreName, AuthorName):-book(_,AuthorId,GenreId,_),author(AuthorId,AuthorName),genre(GenreId,GenreName), ! .
+authorOfGenre(GenreName, AuthorName):-
+book(_,AuthorId,GenreId,_),
+author(AuthorId,AuthorName),
+genre(GenreId,GenreName), ! .
 
 
 % Signature: longestBook(AuthorId, BookName)/2
@@ -57,5 +58,10 @@ book(BookName,AuthorId,_,_), ! .
 
 % Signature: versatileAuthor(AuthorName)
 % Purpose: is true if an author by the name {AuthorName} has
-%written books in at least three different genres
-%versatileAuthor(AuthorName):-
+% written books in at least three different genres
+versatileAuthor(AuthorName):-
+author(AuthorId,AuthorName),
+findall(GenreId,(book(_,AuthorId,GenreId,_)),GenreList),
+length(GenreList,L),
+L >= 3.
+    
