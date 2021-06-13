@@ -65,20 +65,22 @@
 (define equal-trees$ 
  (lambda (tree1 tree2 succ fail)
    (cond
-    ((and (leaf? tree1) (leaf? tree2)) (succ (cons tree1 tree2))) ;succ edge case
-    ((and (not (leaf? tree1)) (leaf? tree2)) (fail (cons tree1 tree2))) ;fail edege case: different structure
-    ((and (leaf? tree1) (not (leaf? tree2))) (fail (cons tree1 tree2))) ;fail edege case: different structure    
-    ((and (not (empty? tree1)) (empty? tree2)) (fail (cons tree1 tree2))) ;fail edege case: different structure
-    ((and (empty? tree1) (not (empty? tree2))) (fail (cons tree1 tree2))) ;fail edege case: different structure
-    ((and (empty? (cdr tree1)) (empty? (cdr tree2))) (list (equal-trees$ (car tree1) (car tree2) succ fail))) ;final tree
-    (else (cons (equal-trees$ (car tree1) (car tree2) succ fail) (equal-trees$ (cdr tree1) (cdr tree2) succ fail))) ;mult trees
+    ((and (empty? tree1) (empty? tree2)) (succ '()))
+    ((and (leaf? tree1) (leaf? tree2)) (succ (cons tree1 tree2)))
+    ((and (not (leaf? tree1)) (leaf? tree2)) (fail (cons tree1 tree2)))
+    ((and (leaf? tree1) (not (leaf? tree2))) (fail (cons tree1 tree2)))
+    ((empty? tree1) (fail (cons tree1 tree2)))
+    ((empty? tree2) (fail (cons tree1 tree2))) 
+    (else (equal-trees$ (car tree1) (car tree2) 
+                        (lambda (first-res) ; succ lambda
+                          (equal-trees$ (cdr tree1) (cdr tree2)
+                              (lambda (rest-res)
+                                (succ (cons first-res rest-res)))
+                                                           fail)) ;end succ lambda
+                        fail))
     )
   )
 )
-;(equal-trees$ '(1 (2) (3 9)) '(7 (2) (3 5)) id id)
-;(equal-trees$ '(1 2 (3 9)) '(1 (2) (3 9)) id id)
-(equal-trees$ '(1 2 (3 9)) '(1 (2) (3 9)) id id)
-
 
 ;;; Q2a
 ; Signature: reduce1-lzl(reducer, init, lzl) 
@@ -133,16 +135,18 @@
 ; Purpose: Returns a list of integers from 'from' with 'steps' jumps
 (define integers-steps-from
   (lambda (from step)
-    #f ; @TODO
+    (cons from (lambda () (integers-steps-from (+ from step) step)))
   )
 )
+
+(define a 1)
 
 ;;; Q2f
 ; Signature: generate-pi-approximations() 
 ; Type: Empty -> Lzl<Number>
 ; Purpose: Returns the approximations of pi as a lazy list
 (define generate-pi-approximations
-  (lambda ()
-    #f ; @TODO
+  (lambda () 
+    (reduce3-lzl + 0 (map-lzl (lambda (x) (/ 8 (* (+ a x) (+ (+ x 2) a)))) (integers-steps-from 0 4)))
    )
  )
