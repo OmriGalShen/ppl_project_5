@@ -53,7 +53,9 @@
  (lambda (lst1 lst2 cont)
     (if (empty? lst1)
         (cont lst2)
-        (append$ (cdr lst1) lst2 (lambda (append-1) (cont (cons (car lst1) append-1))))
+        (append$ (cdr lst1) lst2
+                 (lambda (append-res)
+                                   (cont (cons (car lst1) append-res))))
      )
   )
 )
