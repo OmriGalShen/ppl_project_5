@@ -44,8 +44,7 @@ book("The Lord of the Rings", 4, 4, 1250).
 % Signature: authorOfGenre(GenreName, AuthorName)/2
 % Purpose: is true if an author by the name
 %{AuthorName} has written a book belonging to the genre named {GenreName}
-authorOfGenre(GenreName, AuthorName):-findall(book(_,AuthorId,GenreId,_),author(AuthorId,AuthorName),genre(GenreId,GenreName),List).
-%authorOfGenre(GenreName, AuthorName):-book(_,AuthorId,GenreId,_),author(AuthorId,AuthorName),genre(GenreId,GenreName).
+authorOfGenre(GenreName, AuthorName):-book(_,AuthorId,GenreId,_),author(AuthorId,AuthorName),genre(GenreId,GenreName), ! .
 
 
 % Signature: longestBook(AuthorId, BookName)/2
