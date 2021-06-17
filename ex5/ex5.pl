@@ -35,7 +35,6 @@ book("Dune", 2, 3, 550).
 book("The Well at the World's End", 3, 4, 400).
 book("The Hobbit", 4, 4, 250).
 book("The Lord of the Rings", 4, 4, 1250).
-book("BANANA", 4, 4, 500).
 
 % You can add more facts.
 % Fill in the Purpose, Signature as requested in the instructions here
