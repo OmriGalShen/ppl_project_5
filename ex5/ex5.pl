@@ -52,8 +52,9 @@ genre(GenreId,GenreName), ! .
 % Purpose: is true if the longest book that an author with
 % the ID {AuthorId} has written in titled {BookName}
 longestBook(AuthorId, BookName):-
-bagof(BookName, ( book(BookName,AuthorId,_, Max), \+ ( book(_,AuthorId,_, Y), Y @> Max ) ), _Books),
-book(BookName,AuthorId,_,_), ! .
+book(BookName,AuthorId,_,Len),
+findall(BookLength,(book(_,AuthorId,_,BookLength)),BookLengths),
+max_member(Len,BookLengths).
 
 
 % Signature: versatileAuthor(AuthorName)
